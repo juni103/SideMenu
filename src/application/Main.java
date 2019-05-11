@@ -8,6 +8,8 @@ import application.controller.LockersController;
 import application.controller.MembersController;
 import application.controller.MessagingController;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import navigation.NavigationHandler;
 
@@ -26,11 +28,17 @@ public class Main extends Application {
 				.addNavigation(AdminFunctionsController.REF_ID, AdminFunctionsController.VIEW, 	AdminFunctionsController.class)
 				.addNavigation(DashboardController.REF_ID, 		DashboardController.VIEW, 		DashboardController.class)
 				.setDefaultView(DashboardController.REF_ID)
-				.startOnStage(primaryStage);
+				.startOnStage(primaryStage, getStyleSheets());
 
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ObservableList<String> getStyleSheets() {
+		return FXCollections.observableArrayList(
+				Main.class.getResource("/style.css").toExternalForm()
+		);
 	}
 
 	public static void main(String[] args) {

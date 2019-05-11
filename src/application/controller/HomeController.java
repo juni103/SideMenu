@@ -15,9 +15,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import navigation.NavigationController;
 import navigation.NavigationHandler;
+import navigation.NavigationViewModel;
 
 public class HomeController implements Initializable, NavigationController {
 
@@ -27,6 +29,7 @@ public class HomeController implements Initializable, NavigationController {
 	@FXML private Button 	collapseMenuBtn;
 	@FXML private VBox 		sideMenu;
 	@FXML private Pane 		titleBar;
+	@FXML private Text		viewTitleLabel;
 	@FXML private StackPane contentContainer;
 
 	private NavigationHandler navigationHandler;
@@ -55,7 +58,6 @@ public class HomeController implements Initializable, NavigationController {
 
 	private void collapseMenu(ObservableList<String> menuClass) {
 		menuClass.add("collapsed");
-
 		AnchorPane.setLeftAnchor(contentContainer, 60.0);
 		AnchorPane.setLeftAnchor(titleBar, 50.0);
 	}
@@ -69,7 +71,15 @@ public class HomeController implements Initializable, NavigationController {
 	@FXML
 	private void menuButtonAction(ActionEvent event) {
 		setActive(event);
-		navigationHandler.showView(((Button) event.getSource()).getId());
+		String actionId = ((Button) event.getSource()).getId();
+		navigationHandler.showView(actionId);
+		setViewTitle(actionId);
+	}
+
+	private void setViewTitle(String viewId) {
+		NavigationViewModel viewModel = navigationHandler.getViewModel(viewId);
+		NavigationViewController viewController = (NavigationViewController) viewModel.getViewController();
+		viewTitleLabel.setText(viewController.getViewTitle());
 	}
 
 	private void setActive(ActionEvent event) {
@@ -83,4 +93,6 @@ public class HomeController implements Initializable, NavigationController {
 	public void setNavigationController(NavigationHandler navigationHandler) {
 		this.navigationHandler = navigationHandler;
 	}
+
+
 }

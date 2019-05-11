@@ -8,6 +8,7 @@ import java.util.Map;
 
 import animatefx.animation.FadeInRightBig;
 import animatefx.animation.FadeOutLeftBig;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -65,8 +66,16 @@ public class NavigationHandler {
 		new FadeInRightBig(container).play();
 	}
 
-	@SuppressWarnings("unchecked")
+	public NavigationViewModel getViewModel(String viewId) {
+		return navigations.get(viewId);
+	}
+
 	public NavigationHandler startOnStage(Stage primaryStage) throws IOException {
+		return startOnStage(primaryStage, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public NavigationHandler startOnStage(Stage primaryStage, ObservableList<String> styleSheets) throws IOException {
 		this.primaryStage = primaryStage;
 
 		try {
@@ -79,7 +88,10 @@ public class NavigationHandler {
 
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(controller.getResource("/application/application.css").toExternalForm());
+
+			if(null != styleSheets) {
+				scene.getStylesheets().addAll(styleSheets);
+			}
 
 			if(null != defaultViewPath) {
 				showView(defaultViewPath);
