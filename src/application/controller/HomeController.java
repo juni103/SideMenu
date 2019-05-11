@@ -2,13 +2,11 @@ package application.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,9 +41,9 @@ public class HomeController implements Initializable, NavigationController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		sideMenu.prefWidthProperty().addListener((observable, oldValue, newValue) -> expandOrCollapseMenu(oldValue, newValue));
 		navigationHandler.setContainer(contentContainer);
 		addEventHandlers();
+		addPropertyListeners();
 	}
 
 	private void addEventHandlers() {
@@ -53,14 +51,18 @@ public class HomeController implements Initializable, NavigationController {
 		collapseMenuBtn.setOnAction(event -> onCollapseButtonClicked(event));
 	}
 
+	private void addPropertyListeners() {
+		sideMenu.prefWidthProperty().addListener((observable, oldValue, newValue) -> expandOrCollapseMenu(oldValue, newValue));
+	}
+
 	private void onCollapseButtonClicked(ActionEvent event) {
 		ObservableList<String> styleClasses = sideMenu.getStyleClass();
-		ObservableList<String> collapsed = styleClasses.stream().filter(c -> c.equalsIgnoreCase("collapsed")).collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-		if(collapsed.isEmpty()) {
-			collapseMenu(styleClasses);
+		if(styleClasses.remove("collapsed")) {
+			animateSideMenuWidth(sideMenu.prefWidthProperty(), 285, 300);
 		} else {
-			expandMenu(styleClasses, collapsed);
+			styleClasses.add("collapsed");
+			animateSideMenuWidth(sideMenu.prefWidthProperty(), 50, 300);
 		}
 	}
 
@@ -71,14 +73,25 @@ public class HomeController implements Initializable, NavigationController {
 		AnchorPane.setLeftAnchor(titleBar, newValue.doubleValue());
 	}
 
-	private void collapseMenu(ObservableList<String> menuClass) {
-		menuClass.add("collapsed");
-		animateSideMenuWidth(sideMenu.prefWidthProperty(), 50, 300);
+	@FXML
+	private void menuButtonAction(ActionEvent event) {
+		setMenuButtonActive(event);
+		String actionId = ((Button) event.getSource()).getId();
+		navigationHandler.showView(actionId);
+		setViewTitle(actionId);
 	}
 
-	private void expandMenu(ObservableList<String> menuClass, ObservableList<String> collapsed) {
-		menuClass.removeAll(collapsed);
-		animateSideMenuWidth(sideMenu.prefWidthProperty(), 285, 300);
+	private void setViewTitle(String viewId) {
+		NavigationViewModel viewModel = navigationHandler.getViewModel(viewId);
+		Object viewController = viewModel.getViewController();
+		if(viewController instanceof NavigationViewController) {
+			viewTitleLabel.setText(((NavigationViewController) viewController).getViewTitle());
+		}
+	}
+
+	private void setMenuButtonActive(ActionEvent event) {
+		((Button) sideMenu.lookup(".menu-button.active")).getStyleClass().remove("active");
+		((Button) event.getSource()).getStyleClass().add("active");
 	}
 
 	public void animateSideMenuWidth(DoubleProperty paneWidthProperty, double width, double durationInMilis) {
@@ -89,29 +102,9 @@ public class HomeController implements Initializable, NavigationController {
 		timeline.play();
 	}
 
-	@FXML
-	private void menuButtonAction(ActionEvent event) {
-		setActive(event);
-		String actionId = ((Button) event.getSource()).getId();
-		navigationHandler.showView(actionId);
-		setViewTitle(actionId);
-	}
-
-	private void setViewTitle(String viewId) {
-		NavigationViewModel viewModel = navigationHandler.getViewModel(viewId);
-		NavigationViewController viewController = (NavigationViewController) viewModel.getViewController();
-		viewTitleLabel.setText(viewController.getViewTitle());
-	}
-
-	private void setActive(ActionEvent event) {
-		((Button) sideMenu.lookup(".menu-button.active")).getStyleClass().remove("active");
-		((Button) event.getSource()).getStyleClass().add("active");
-	}
-
 	@Override
 	public void setNavigationController(NavigationHandler navigationHandler) {
 		this.navigationHandler = navigationHandler;
 	}
-
 
 }
