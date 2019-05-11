@@ -18,7 +18,7 @@
     -fx-text-alignment: LEFT;
     -fx-alignment: NONE;
     -fx-padding: 10 10 10 16;
-    -fx-pref-width: 285;
+    /*-fx-pref-width: 285;*/
 }
 .side-menu .menu-button .glyph-icon {
 	-glyph-size: 16;
@@ -39,11 +39,11 @@
 	-fx-background-color: #1A237E;
 }
 .side-menu.collapsed {
-	-fx-pref-width: 50px;
+	/*-fx-pref-width: 50px;*/
 }
 .side-menu.collapsed .menu-button {
 	-fx-content-display: GRAPHIC_ONLY;
-	-fx-pref-width: 50px;
+	/*-fx-pref-width: 50px;*/
 }
 
 /***************************** */

@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import navigation.NavigationHandler;
 
-
 public class Main extends Application {
 
 	@Override

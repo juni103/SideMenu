@@ -4,6 +4,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,12 +15,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import navigation.NavigationController;
 import navigation.NavigationHandler;
 import navigation.NavigationViewModel;
@@ -31,11 +37,13 @@ public class HomeController implements Initializable, NavigationController {
 	@FXML private Pane 		titleBar;
 	@FXML private Text		viewTitleLabel;
 	@FXML private StackPane contentContainer;
+	@FXML private Label		companyLogo;
 
 	private NavigationHandler navigationHandler;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		sideMenu.prefWidthProperty().addListener((observable, oldValue, newValue) -> expandOrCollapseMenu(oldValue, newValue));
 		navigationHandler.setContainer(contentContainer);
 		addEventHandlers();
 	}
@@ -56,16 +64,29 @@ public class HomeController implements Initializable, NavigationController {
 		}
 	}
 
+	private void expandOrCollapseMenu(Number oldValue, Number newValue) {
+		sideMenu.lookupAll(".menu-button").forEach(node -> ((Button) node).setPrefWidth(newValue.doubleValue()));
+		companyLogo.setPrefWidth(newValue.doubleValue());
+		AnchorPane.setLeftAnchor(contentContainer, newValue.doubleValue() + 10);
+		AnchorPane.setLeftAnchor(titleBar, newValue.doubleValue());
+	}
+
 	private void collapseMenu(ObservableList<String> menuClass) {
 		menuClass.add("collapsed");
-		AnchorPane.setLeftAnchor(contentContainer, 60.0);
-		AnchorPane.setLeftAnchor(titleBar, 50.0);
+		animateSideMenuWidth(sideMenu.prefWidthProperty(), 50, 300);
 	}
 
 	private void expandMenu(ObservableList<String> menuClass, ObservableList<String> collapsed) {
 		menuClass.removeAll(collapsed);
-		AnchorPane.setLeftAnchor(contentContainer, 295.0);
-		AnchorPane.setLeftAnchor(titleBar, 285.0);
+		animateSideMenuWidth(sideMenu.prefWidthProperty(), 285, 300);
+	}
+
+	public void animateSideMenuWidth(DoubleProperty paneWidthProperty, double width, double durationInMilis) {
+		final Timeline timeline = new Timeline();
+		final KeyValue kv = new KeyValue(paneWidthProperty, width);
+		final KeyFrame kf = new KeyFrame(Duration.millis(durationInMilis), kv);
+		timeline.getKeyFrames().add(kf);
+		timeline.play();
 	}
 
 	@FXML
@@ -83,10 +104,8 @@ public class HomeController implements Initializable, NavigationController {
 	}
 
 	private void setActive(ActionEvent event) {
-		Button currentButton = (Button) event.getSource();
-		Button previousButton = (Button) sideMenu.lookup(".menu-button.active");
-		previousButton.getStyleClass().remove("active");
-		currentButton.getStyleClass().add("active");
+		((Button) sideMenu.lookup(".menu-button.active")).getStyleClass().remove("active");
+		((Button) event.getSource()).getStyleClass().add("active");
 	}
 
 	@Override

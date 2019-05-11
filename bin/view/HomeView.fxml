@@ -16,7 +16,7 @@
    <children>
       <VBox fx:id="sideMenu" prefHeight="465.0" prefWidth="285.0" styleClass="side-menu" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label alignment="CENTER" prefHeight="82.0" prefWidth="287.0" text="GYM" textFill="WHITE">
+            <Label fx:id="companyLogo" alignment="CENTER" prefHeight="82.0" prefWidth="287.0" text="GYM" textFill="WHITE">
                <font>
                   <Font name="Arial Bold" size="36.0" />
                </font>
@@ -58,7 +58,7 @@
       </VBox>
       <Pane fx:id="titleBar" layoutX="285.0" prefHeight="49.0" prefWidth="512.0" styleClass="title-bar" AnchorPane.leftAnchor="285.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Text layoutX="52.0" fx:id="viewTitleLabel" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dashboard">
+            <Text fx:id="viewTitleLabel" layoutX="52.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dashboard">
                <font>
                   <Font size="24.0" />
                </font>
